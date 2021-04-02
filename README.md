@@ -8,13 +8,13 @@ The tools found within this repository are public tools available for anyone to 
 #### Zeek Conversion Script
 Using the Zeek conversion script only requires that you have Zeek conn.log and dns.log files for whatever traffic you're interested in converting. It's that simple! To launch the script, simply type the following:
 ```
-sh prepCSecFlows.sh -z -c someConn.log -d someDNS.log
+bash prepCSecFlows.sh -z -c someConn.log -d someDNS.log
 ```
 
 #### PCAP Conversion Script
 Using the PCAP conversion script requires that you also have `tcpdump` installed. Other than that, everything that comes with a standard Linux release should suffice. To launch the script, simply type the following:
 ```
-sh prepCSecFlows.sh -p -f somePcapFile.pcap
+bash prepCSecFlows.sh -p -f somePcapFile.pcap
 ```
 
 ## Samples

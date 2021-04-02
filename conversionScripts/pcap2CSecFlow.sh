@@ -16,7 +16,7 @@ utilsDir="${wd}/utils"
 conversionScriptsDir="${wd}/conversionScripts"
 
 # ############## check if file is valid ###############
-  status=$(sh "${utilsDir}/checkFileValidity.sh" $filePath)
+  status=$(bash "${utilsDir}/checkFileValidity.sh" $filePath)
 
   if [[ status == "FAIL" ]]
   then
@@ -24,12 +24,12 @@ conversionScriptsDir="${wd}/conversionScripts"
   fi
 
 # ############## remove local traffic ###############
-  filteredFile=$(sh "${utilsDir}/removeLocalTraffic.sh" $filePath | cut -d"\"" -f4)
+  filteredFile=$(bash "${utilsDir}/removeLocalTraffic.sh" $filePath | cut -d"\"" -f4)
 
 # ############## get passive DNS ###############
-  sh "${utilsDir}/getPassiveDNS.sh" $filteredFile
+  bash "${utilsDir}/getPassiveDNS.sh" $filteredFile
 
 # ############## get active DNS ###############
-  sh "${utilsDir}/getActiveDNS.sh" $filteredFile
+  bash "${utilsDir}/getActiveDNS.sh" $filteredFile
 
   echo $destinationsFilePreProcessed

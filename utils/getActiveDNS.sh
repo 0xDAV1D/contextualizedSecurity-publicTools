@@ -30,14 +30,14 @@ conversionScriptsDir="${wd}/conversionScripts"
   touch $activeLookupsCompleted
 
 # ############# Extract out high-level insights #############
-  sh "${utilsDir}/collectInsightsByFilter.sh" "$filePath" "tcp" "$tcpDestinationsFile"
-  sh "${utilsDir}/collectInsightsByFilter.sh" "$filePath" "udp" "$udpDestinationsFile"
-  sh "${utilsDir}/collectInsightsByFilter.sh" "$filePath" "ip and !(tcp || udp)" "$ipV4DestinationsFile"
+  bash "${utilsDir}/collectInsightsByFilter.sh" "$filePath" "tcp" "$tcpDestinationsFile"
+  bash "${utilsDir}/collectInsightsByFilter.sh" "$filePath" "udp" "$udpDestinationsFile"
+  bash "${utilsDir}/collectInsightsByFilter.sh" "$filePath" "ip and !(tcp || udp)" "$ipV4DestinationsFile"
   cat $tcpDestinationsFile $udpDestinationsFile $ipV4DestinationsFile > $destinationsFilePreProcessed
 
 # ############## Collect passive hosts #############
 
-  sh "${utilsDir}/collectPassiveDNS.sh" "$filePath" "$passiveDestinationsFilePreProcessed"
+  bash "${utilsDir}/collectPassiveDNS.sh" "$filePath" "$passiveDestinationsFilePreProcessed"
 
 # ############## Sort and actively look up destination IPs #############
   cat $passiveDestinationsFilePreProcessed | cut -d" " -f1 | sort -u > $passiveDestinationsFilePostProcessed

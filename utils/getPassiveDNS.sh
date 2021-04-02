@@ -13,4 +13,4 @@ wd=$(pwd)
 utilsDir="${wd}/utils"
 conversionScriptsDir="${wd}/conversionScripts"
 
-  sh "${utilsDir}/collectPassiveDNS.sh" "$filePath" "$passiveDNSNames"
+  bash "${utilsDir}/collectPassiveDNS.sh" "$filePath" "$passiveDNSNames"

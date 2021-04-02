@@ -20,7 +20,7 @@ conversionScriptsDir="${wd}/conversionScripts"
 
 
 # ############# Collect all external IPv4 IPs actually used #############
-  sh "${utilsDir}/collectInsightsByFilter.sh" "$filePath" "ip" "$allDestinationIPsFile"
+  bash "${utilsDir}/collectInsightsByFilter.sh" "$filePath" "ip" "$allDestinationIPsFile"
   tail +5 $allDestinationIPsFile | awk '{ print ($3 ~ /^(10|127|169\.254|172\.1[6-9]|172\.2[0-9]|172\.3[0-1]|192\.168)\./ ? NR " " "": NR " " $3) }' |sort -k2  | uniq -f1 | sort -nk1,1 | cut -d" " -f2- | cut -d":" -f1 | awk NF > tmpFile
   mv tmpFile $allDestinationIPsFile
 
