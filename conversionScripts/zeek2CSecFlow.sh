@@ -134,5 +134,5 @@ tmp2File="${cSecDir}/tmp2"
           echo $line " " $line >> $activeLookupsCompleted
       fi
   done
-  
+
   echo $destinationsFilePreProcessed
