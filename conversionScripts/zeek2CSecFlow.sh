@@ -38,7 +38,7 @@ tmp2File="${cSecDir}/tmp2"
   echo "" > $tmp2File #clear out the file
   curSPort=0
   absoluteStart=$(head -1 $tmpFile | awk '{print $12}')
-  cat $tmpFile | sort -nk1 > $interimFile #now order by timestamp (ascending) by source port
+  cat $tmpFile | sort -nk1 > $interimFile #now order by source port
 
   while IFS= read -r line
   do
@@ -46,11 +46,20 @@ tmp2File="${cSecDir}/tmp2"
     if [[ "$curSPort" != "$candidateSPort" ]] #Skip when already processed port
     then
       curSPort=$candidateSPort
-      cat $interimFile | grep ":$curSPort" | awk -v absoluteStart=$absoluteStart 'function max(m,n) {return m <= n ? n : m} function min(m,n) {return m >= n ? n : m} BEGIN {sPackets=0; dPackets=0; maxNonServiceSB=0; maxNonServiceDB=0; maxServiceSB=0; maxServiceDB=0; chunkStart=9999999999;}
+      cat $interimFile | grep ":$curSPort" | awk -v absoluteStart=$absoluteStart 'function max(m,n) {return m <= n ? n : m} function min(m,n) {return m >= n ? n : m} BEGIN {sPackets=0; dPackets=0; maxNonServiceSB=0; maxNonServiceDB=0; maxServiceSB=0; maxServiceDB=0; chunkStart=9999999999; chunkEnd=-1;}
       {
         sPackets+=$8
         dPackets+=$10
         chunkStart=min(chunkStart,$12)
+        if ($13 == "-") #handle timestamps being out of order
+        {
+          chunkEnd=max(chunkEnd,$12)
+        }
+        else
+        {
+          chunkEnd=max(chunkEnd,$12+$13)
+        }
+
         if ($5 == "-" )
         {
           if ( $14 == "S" )
@@ -84,7 +93,7 @@ tmp2File="${cSecDir}/tmp2"
         }
       }
       #print srcIP:port <-> dst:port srcPackets srcBytes dstPackets dstBytes relStart duration
-      END {print $1, $2, $3, sPackets, max(maxNonServiceSB, maxServiceSB), dPackets, max(maxNonServiceDB, maxServiceDB), (chunkStart-absoluteStart), ($12+$13-chunkStart) }' >> $tmp2File
+      END {print $1, $2, $3, sPackets, max(maxNonServiceSB, maxServiceSB), dPackets, max(maxNonServiceDB, maxServiceDB), (chunkStart-absoluteStart), (chunkEnd-chunkStart) }' >> $tmp2File
   fi
   done < "$interimFile"
 
