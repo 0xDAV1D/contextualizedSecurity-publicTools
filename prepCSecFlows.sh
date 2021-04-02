@@ -5,11 +5,11 @@
 ### This file is the main script that should be used to call the other scripts
 ### in this directory. Call it by either passing in a CAP/PCAP/PCAPNG file:
 ###
-###             sh prepCSecFlows.sh -p -f somePcapFile.pcap
+###             bash prepCSecFlows.sh -p -f somePcapFile.pcap
 ###
 ### or by passing in the Zeek (Bro) conn.log and dns.log:
 ###
-###             sh prepCSecFlows.sh -z -c someConn.log -d someDNS.log
+###             bash prepCSecFlows.sh -z -c someConn.log -d someDNS.log
 ###
 ### In either case, all local-to-local traffic will be removed, and the files
 ### will be converted into a CSec Flow format (which is similar to but more
@@ -29,13 +29,13 @@ cSecDir="${wd}/contextualizedSecurity"
 # ############# Argument parsing #############
   if [[ "$#" -eq 0 ]]
   then
-    echo "Usage: sh prepCSecFlows.sh [-z -c <conn.log> -d <dns.log> | -p -f <pcap file>]";
+    echo "Usage: bash prepCSecFlows.sh [-z -c <conn.log> -d <dns.log> | -p -f <pcap file>]";
     exit 0
   fi
 
   while [[ "$#" -gt 0 ]]; do
     case $1 in
-        -h) echo "Usage: sh prepCSecFlows.sh [-z -c <conn.log> -d <dns.log> | -p -f <pcap file>]";
+        -h) echo "Usage: bash prepCSecFlows.sh [-z -c <conn.log> -d <dns.log> | -p -f <pcap file>]";
             exit 0
             ;;
         -z) zeek=1 ;;
@@ -44,7 +44,7 @@ cSecDir="${wd}/contextualizedSecurity"
         -d) dnsLog="$2"; shift ;;
         -f) pcapFile="$2"; shift ;;
         *) echo "Unknown parameter passed: $1";
-           echo "Usage: sh prepCSecFlows.sh [-z -c <conn.log> -d <dns.log> | -p -f <pcap file>]";
+           echo "Usage: bash prepCSecFlows.sh [-z -c <conn.log> -d <dns.log> | -p -f <pcap file>]";
            exit 1 ;;
     esac
     shift
@@ -54,7 +54,7 @@ cSecDir="${wd}/contextualizedSecurity"
   then
     if [[ $zeek == 1 ]]
     then
-      echo "Usage: sh prepCSecFlows.sh [-z -c <conn.log> -d <dns.log>|-p -f <pcap file>]"
+      echo "Usage: bash prepCSecFlows.sh [-z -c <conn.log> -d <dns.log>|-p -f <pcap file>]"
       exit 0
     elif [[ -z $pcapFile ]]
     then
@@ -66,7 +66,7 @@ cSecDir="${wd}/contextualizedSecurity"
   then
     if [[ $pcap == 1 ]]
     then
-      echo "Usage: sh prepCSecFlows.sh [-z -c <conn.log> -d <dns.log>|-p -f <pcap file>]"
+      echo "Usage: bash prepCSecFlows.sh [-z -c <conn.log> -d <dns.log>|-p -f <pcap file>]"
       exit 0
     elif [[ -z $connLog ]]
     then
@@ -101,12 +101,12 @@ cSecDir="${wd}/contextualizedSecurity"
   then
     # Grab the traffic date, and convert from Zeek flows to CSec Flows:
     trafficDate=$(tail +9 $connLog | head -1 | awk '{print $1}')
-    destinationsFilePreProcessed=$(sh "${conversionScriptsDir}/zeek2CSecFlow.sh" $connLog $dnsLog $cSecDir)
+    destinationsFilePreProcessed=$(bash "${conversionScriptsDir}/zeek2CSecFlow.sh" $connLog $dnsLog $cSecDir)
   elif [[ $pcap == 1 ]]
   then
     # Grab the traffic date, and convert from PCAP data to CSec Flows:
     trafficDate=$(tcpdump -ttr --dont-verify-checksums -nr $pcapFile | head -1 | awk '{print $1}')
-    destinationsFilePreProcessed=$(sh "${conversionScriptsDir}/pcap2CSecFlow.sh" $pcapFile $cSecDir)
+    destinationsFilePreProcessed=$(bash "${conversionScriptsDir}/pcap2CSecFlow.sh" $pcapFile $cSecDir)
   fi
 
   # Raw network flows, before leveraging passive/active DNS
