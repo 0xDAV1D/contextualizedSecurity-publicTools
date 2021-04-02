@@ -27,7 +27,9 @@ conversionScriptsDir="${wd}/conversionScripts"
   localReverse=$(cat "${filteredFile}_dnsAll.txt" | awk '($2 ~/([0-9]{1,3})\.([0-9]{1,3})\.((1[6-9]\.172)|(2[0-9]\.172)|(3[0-1]\.172)|([0-9]{1,3}\.10)|(168\.192))\.in\-addr\.arpa\.$/ ) {printf "%s or ", $1}')
 
   # 2. Remove LOCAL protocols, including ALL SMB
-  localProtocols="445 or llmnr or netbios-ssn or netbios-ns or mdns or ldap or ldaps or bootps or bootpc or ssdp"
+  localProtocols="445 or 5355 or netbios-ssn or netbios-ns or mdns or ldap or ldaps or bootps or bootpc or 1900"
+  # For some reason Ubuntu can't handle llmnr or ssdp by name...
+  #localProtocols="445 or llmnr or netbios-ssn or netbios-ns or mdns or ldap or ldaps or bootps or bootpc or ssdp"
 
   # 3. Confirm at least one IP address is NOT LOCAL (still needs ipv6)
   localToLocalSansDNS="(src net 0.0.0.0/32 or 192.168.0.0/16 or 10.0.0.0/8 or 172.16.0.0/12 or 239.255.255.250/32 or 224.0.0.0/4 or 255.255.255.255/32) and (dst net (0.0.0.0/32 or 192.168.0.0/16 or 10.0.0.0/8 or 172.16.0.0/12 or 239.255.255.250/32 or 224.0.0.0/4 or 255.255.255.255/32)) and not port domain"
