@@ -32,4 +32,8 @@ conversionScriptsDir="${wd}/conversionScripts"
 # ############## get active DNS ###############
   bash "${utilsDir}/getActiveDNS.sh" $filteredFile
 
+# ############## remove any broken connections ###############
+  grep -v "bad-len" $destinationsFilePreProcessed > $tmpFile
+  mv $tmpFile $destinationsFilePreProcessed
+  
   echo $destinationsFilePreProcessed
