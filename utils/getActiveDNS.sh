@@ -32,8 +32,10 @@ conversionScriptsDir="${wd}/conversionScripts"
 # ############# Extract out high-level insights #############
   bash "${utilsDir}/collectInsightsByFilter.sh" "$filePath" "tcp" "$tcpDestinationsFile"
   bash "${utilsDir}/collectInsightsByFilter.sh" "$filePath" "udp" "$udpDestinationsFile"
-  bash "${utilsDir}/collectInsightsByFilter.sh" "$filePath" "ip and !(tcp || udp)" "$ipV4DestinationsFile"
-  cat $tcpDestinationsFile $udpDestinationsFile $ipV4DestinationsFile > $destinationsFilePreProcessed
+  ### below commented out because we don't gracefully handle things like ICMP right now. We really need to handle those too, in the future.
+  #bash "${utilsDir}/collectInsightsByFilter.sh" "$filePath" "ip and not (tcp || udp)" "$ipV4DestinationsFile"
+  #cat $tcpDestinationsFile $udpDestinationsFile $ipV4DestinationsFile > $destinationsFilePreProcessed
+cat $tcpDestinationsFile $udpDestinationsFile > $destinationsFilePreProcessed
 
 # ############## Collect passive hosts #############
 

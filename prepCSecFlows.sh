@@ -25,6 +25,7 @@ wd=$(pwd)
 utilsDir="${wd}/utils"
 conversionScriptsDir="${wd}/conversionScripts"
 cSecDir="${wd}/contextualizedSecurity"
+csecPDNSFile="${wd}/cSecPassiveDNS.txt"
 
 # ############# Argument parsing #############
   if [[ "$#" -eq 0 ]]
@@ -112,7 +113,7 @@ cSecDir="${wd}/contextualizedSecurity"
   # Raw network flows, before leveraging passive/active DNS
   cat $destinationsFilePreProcessed | grep -E "(<->)" | sort -nk1 | sort -nk10 > $orderedConnectionsFile
 
-  # Replace any possible destinations with passive DNS
+  # Replace any possible destinations with passive DNS from current file
   IFS=$'\n'
   for line in $(cat $passiveDestinationsFilePreProcessed); do
     ip=$(echo "$line" | awk '{print $1;}')
@@ -120,6 +121,32 @@ cSecDir="${wd}/contextualizedSecurity"
     sed "s/$ip:/$dom:/" $orderedConnectionsFile  > $tmpFile && mv $tmpFile $orderedConnectionsFile
   done
   unset IFS
+
+  ### Replace any possible destinations with passive DNS from overall PDNS file,
+  ### if it exists. Either way, add current file's DNS to the PDNS file (for
+  ### PCAPs).
+  if [[ ! -z $csecPDNSFile ]]
+  then
+    IFS=$'\n'
+    for line in $(cat $orderedConnectionsFile); do
+      #echo "Line is" $line
+      ip=$(echo "$line" | cut -d" " -f3 | cut -d":" -f1)
+      dom=$(grep $ip $csecPDNSFile | cut -d" " -f2 | head -1)
+      if [[ $dom == "" ]] #handle empty case
+      then
+        dom=$ip
+      fi
+      #echo "Attempting to replace" $ip "with" $dom
+      sed "s/$ip:/$dom:/" $orderedConnectionsFile  > $tmpFile
+      mv $tmpFile $orderedConnectionsFile
+    done
+    unset IFS
+  fi
+  if [[ $pcap == 1 ]]
+  then
+    echo "Adding " $pcapFile "'s DNS lookups to global passive DNS file"
+    bash "$utilsDir/updatePassiveDNSRepository.sh" -f $pcapFile
+  fi
 
   # Replace any remaining destinations with active DNS
   IFS=$'\n'

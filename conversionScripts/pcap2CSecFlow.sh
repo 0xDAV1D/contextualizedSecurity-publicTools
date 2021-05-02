@@ -35,5 +35,5 @@ conversionScriptsDir="${wd}/conversionScripts"
 # ############## remove any broken connections ###############
   grep -v "bad-len" $destinationsFilePreProcessed > $tmpFile
   mv $tmpFile $destinationsFilePreProcessed
-  
+
   echo $destinationsFilePreProcessed
