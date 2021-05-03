@@ -111,9 +111,21 @@ csecPDNSFile="${wd}/cSecPassiveDNS.txt"
   fi
 
   # Raw network flows, before leveraging passive/active DNS
-  cat $destinationsFilePreProcessed | grep -E "(<->)" | sort -nk1 | sort -nk10 > $orderedConnectionsFile
+  cat $destinationsFilePreProcessed | grep -E "(<->)" | sort -nk8 > $orderedConnectionsFile
 
-  # Replace any possible destinations with passive DNS from current file
+  # Replace any destinations with passive DNS for EXACT session from current
+  # file (avoids over-naming samples where IPs have multiple names)
+  # This doesn't seem to be working right on OS X...
+  IFS=$'\n'
+  for line in $(cat $passiveDestinationsFilePreProcessed); do
+    ip=$(echo "$line" | awk '{print $1;}')
+    dom=$(echo "$line" | awk '{print $2;}')
+    sed "s/$ip:/$dom:/1" $orderedConnectionsFile  > $tmpFile && mv $tmpFile $orderedConnectionsFile
+  done
+  unset IFS
+
+  # Replace any possible destinations with passive DNS from current file that
+  # weren't picked up in previous run
   IFS=$'\n'
   for line in $(cat $passiveDestinationsFilePreProcessed); do
     ip=$(echo "$line" | awk '{print $1;}')
