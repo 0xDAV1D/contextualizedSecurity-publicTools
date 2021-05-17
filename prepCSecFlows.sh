@@ -142,13 +142,16 @@ csecPDNSFile="${wd}/cSecPassiveDNS.txt"
     IFS=$'\n'
     for line in $(cat $orderedConnectionsFile); do
       #echo "Line is" $line
+      dom=""
       ip=$(echo "$line" | cut -d" " -f3 | cut -d":" -f1)
-      dom=$(grep $ip $csecPDNSFile | cut -d" " -f2 | head -1)
+      if [[ $ip =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]] #still actually IPv4 IP
+      then
+        dom=$(grep $ip $csecPDNSFile | cut -d" " -f2 | head -1)
+      fi
       if [[ $dom == "" ]] #handle empty case
       then
         dom=$ip
       fi
-      #echo "Attempting to replace" $ip "with" $dom
       sed "s/$ip:/$dom:/" $orderedConnectionsFile  > $tmpFile
       mv $tmpFile $orderedConnectionsFile
     done
